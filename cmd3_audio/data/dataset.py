@@ -8,7 +8,7 @@ from torch.utils.data import Dataset
 from torchvision.transforms import ToTensor
 
 from models import vggish_input, vggish_params
-
+from pathlib import Path
 
 class CMD3Dataset(Dataset):
     
@@ -34,14 +34,13 @@ class CMD3Dataset(Dataset):
         """Get paths to all directories containing audio. """
         with open(self.data_path) as f:
             lines = f.read().splitlines()
-
         audio_paths = []
         for line in lines:
             audio_filename, label = line.split(".mkv")
-            audio_path = osp.join(self.audio_path_prefix, audio_filename[6:10])
-            for shot_index in os.listdir(audio_path):
-                audio_shot_path = osp.join(audio_path, shot_index)
-                audio_paths.append((audio_shot_path, int(label)))
+            audio_path = '/home/vic-kang/cmd3/cmd3_audio/dataset/' + audio_filename + '.wav'
+            audio_paths.append((audio_path, int(label)))
+
+        print("num_audio: ", len(audio_paths))
 
         return audio_paths
 
@@ -49,9 +48,15 @@ class CMD3Dataset(Dataset):
         
         samples = []
         for path in audio_paths:
+
+            print("path: ", path)
             audio_path, label = path
             sample = vggish_input.wavfile_to_examples(audio_path)
-            samples.append((sample, int(label)))
+
+            for i in range(sample.shape[0]):
+                samples.append((sample[i], int(label)))
+
+            print(len(samples))
 
         return samples
 

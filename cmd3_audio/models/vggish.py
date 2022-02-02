@@ -162,9 +162,6 @@ class VGGish(VGG):
     def _preprocess(self, x, fs):
         print(type(x))
         x = x[0]
-        # print(x)
-        # print(len(x))
-        # assert False
         if isinstance(x, np.ndarray):
             x = vggish_input.waveform_to_examples(x, fs)
         elif isinstance(x, str):

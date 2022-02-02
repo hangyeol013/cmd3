@@ -13,18 +13,6 @@ from models.model import CMD3Audio
 @hydra.main(config_path="configs", config_name="config")
 def main(cfg: DictConfig):
 
-    # num_class = 3
-
-    # model_urls = {
-    #     'vggish': 'https://github.com/harritaylor/torchvggish/'
-    #             'releases/download/v0.1/vggish-10086976.pth',
-    #     'pca': 'https://github.com/harritaylor/torchvggish/'
-    #         'releases/download/v0.1/vggish_pca_params-970ea276.pth'
-    # }
-
-    # model = VGGish(urls=model_urls)
-    # model.embeddings[4] = nn.Linear(4096, num_class)
-    # model.eval()
 
     model = CMD3Audio(
         model_name=cfg.model.model_name,
