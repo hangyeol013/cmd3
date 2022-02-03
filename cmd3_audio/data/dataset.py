@@ -62,7 +62,8 @@ class CMD3Dataset(Dataset):
 
     def __getitem__(self, index: int) -> Dict[str, Any]:
         audio_sample, sample_label = self.audio_sample[index]
-        audio_paths, _ = self.audio_paths[index]
+        path_index = index // (len(self.audio_sample)+1)
+        audio_paths, _ = self.audio_paths[path_index]
         audio_id = audio_paths.split(osp.sep)[-1]
         outputs = {"label": sample_label, "id": audio_id}
 

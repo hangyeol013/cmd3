@@ -124,51 +124,37 @@ def _vgg():
 
 
 class VGGish(VGG):
-    def __init__(self, path, device=None, pretrained=True, preprocess=False, postprocess=False, progress=True):
+    def __init__(self, path, device=None, pretrained=True):
         super().__init__(make_layers())
         if pretrained:
             state_dict = torch.load(path)
             super().load_state_dict(state_dict)
+    
+        self.embeddings = nn.Sequential(
+            nn.Linear(512 * 4 * 6, 4096),
+            nn.ReLU(True),
+            nn.Linear(4096, 4096),
+            nn.ReLU(True)
+        )
 
-        if device is None:
-            device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.device = device
-        self.preprocess = preprocess
-        self.postprocess = postprocess
-        if self.postprocess:
-            self.pproc = Postprocessor()
-            if pretrained:
-                state_dict = hub.load_state_dict_from_url(urls['pca'], progress=progress)
-                # TODO: Convert the state_dict to torch
-                state_dict[vggish_params.PCA_EIGEN_VECTORS_NAME] = torch.as_tensor(
-                    state_dict[vggish_params.PCA_EIGEN_VECTORS_NAME], dtype=torch.float
-                )
-                state_dict[vggish_params.PCA_MEANS_NAME] = torch.as_tensor(
-                    state_dict[vggish_params.PCA_MEANS_NAME].reshape(-1, 1), dtype=torch.float
-                )
+        for param in self.parameters():
+            param.requires_grad = False
 
-                self.pproc.load_state_dict(state_dict)
-        self.to(self.device)
+        self.classifier = nn.Sequential(nn.Linear(4096, 3),
+                                        nn.ReLU(True))
+
 
     def forward(self, x, fs=None):
-        # if self.preprocess:
-        #     x = self._preprocess(x, fs)
-        # x = x.to(self.device)
-        x = VGG.forward(self, x)
-        if self.postprocess:
-            x = self._postprocess(x)
-        return x
+        self.features.eval()
+        self.embeddings.eval()
+        
+        with torch.no_grad():
+            x = self.features(x)
+            x = torch.transpose(x, 1, 3)
+            x = torch.transpose(x, 1, 2)
+            x = x.contiguous()
+            x = x.view(x.size(0), -1)
+            x = self.embeddings(x)
+        x = self.classifier(x)
 
-    def _preprocess(self, x, fs):
-        print(type(x))
-        x = x[0]
-        if isinstance(x, np.ndarray):
-            x = vggish_input.waveform_to_examples(x, fs)
-        elif isinstance(x, str):
-            x = vggish_input.wavfile_to_examples(x)
-        else:
-            raise AttributeError
         return x
-
-    def _postprocess(self, x):
-        return self.pproc(x)

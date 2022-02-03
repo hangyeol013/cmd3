@@ -33,7 +33,7 @@ def main(cfg: DictConfig):
     wandb_logger = WandbLogger(
         name=cfg.xp_name,
         project=cfg.dataset.project,
-        offine=True,
+        offline=True,
     )
     checkpoint = ModelCheckpoint(
         monitor='val/precision',
@@ -54,7 +54,6 @@ def main(cfg: DictConfig):
         log_every_n_steps=5,
         precision=16,
         plugins=DDPPlugin(find_unused_parameters=False),
-        num_sanity_val_steps=0,
     )
 
     trainer.fit(model, data_module)

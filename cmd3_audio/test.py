@@ -4,17 +4,17 @@ import torch.nn as nn
 
 from data.dataset import CMD3Dataset
 
-data_path = "cmd3_audio/dataset/set_splits/train_split.csv"
-audio_path = "cmd3_audio/dataset/audio"
+# data_path = "cmd3_audio/dataset/set_splits/train_split.csv"
+# audio_path = "cmd3_audio/dataset/audio"
 
-dataset = CMD3Dataset(data_path, audio_path)
-print(len(dataset))
+# dataset = CMD3Dataset(data_path, audio_path)
+# print(len(dataset))
 
 
 model_urls = "cmd3_audio/models/vggish_pretrained.pth"
 
 model = VGGish(model_urls)
-# print(model)
+print(model)
 # model.eval()
 
 # print(model.embeddings[4])

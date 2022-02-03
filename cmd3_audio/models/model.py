@@ -31,8 +31,9 @@ class CMD3Audio(LightningModule):
         self.num_classes = NUM_CLASSES
         self.feature_extraction = feature_extraction
 
-        self.model = VGGish(model_path)
-        self.model.embeddings[4] = nn.Linear(4096, self.num_classes)
+        self.model = VGGish(model_path,
+                            self.num_classes,
+                            )
 
         self.criterion = CrossEntropyLoss()
         metric_params = {"num_classes": self.num_classes, "average": "macro"}
@@ -50,7 +51,7 @@ class CMD3Audio(LightningModule):
             x = self.model(x)
             return x
 
-    def shared_log_step(
+    def _shared_log_step(
         self,
         mode: str,
         loss: torch.Tensor,
