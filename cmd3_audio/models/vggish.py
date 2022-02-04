@@ -124,7 +124,7 @@ def _vgg():
 
 
 class VGGish(VGG):
-    def __init__(self, path, device=None, pretrained=True):
+    def __init__(self, path, num_classes, pretrained=True):
         super().__init__(make_layers())
         if pretrained:
             state_dict = torch.load(path)
@@ -140,7 +140,7 @@ class VGGish(VGG):
         for param in self.parameters():
             param.requires_grad = False
 
-        self.classifier = nn.Sequential(nn.Linear(4096, 3),
+        self.classifier = nn.Sequential(nn.Linear(4096, num_classes),
                                         nn.ReLU(True))
 
 
@@ -150,6 +150,8 @@ class VGGish(VGG):
         
         with torch.no_grad():
             x = self.features(x)
+            # Transpose the output from features to
+            # remain compatible with vggish embeddings
             x = torch.transpose(x, 1, 3)
             x = torch.transpose(x, 1, 2)
             x = x.contiguous()

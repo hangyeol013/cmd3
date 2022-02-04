@@ -11,9 +11,9 @@ from data.dataset import CMD3Dataset
 # print(len(dataset))
 
 
-model_urls = "cmd3_audio/models/vggish_pretrained.pth"
+model_path = "cmd3_audio/models/vggish_pretrained.pth"
 
-model = VGGish(model_urls)
+model = VGGish(model_path, 3)
 print(model)
 # model.eval()
 
