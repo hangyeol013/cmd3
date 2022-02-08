@@ -7,6 +7,8 @@ from pytorch_lightning import LightningModule
 import torchmetrics
 
 from .vggish import VGGish
+import numpy as np
+
 
 NUM_CLASSES = 3
 
@@ -135,6 +137,8 @@ class CMD3Audio(LightningModule):
 
         clip_ids = batch["id"]
         preds = self.model(inputs).squeeze()
+        if preds.ndim == 1:
+            preds = preds[None, :]
         loss = self.criterion(preds, targets)
 
         return {

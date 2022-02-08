@@ -1,14 +1,10 @@
-import os
 import os.path as osp
 from typing import Any, Dict, List, Tuple
-from PIL import Image
 
-import torch
 from torch.utils.data import Dataset
-from torchvision.transforms import ToTensor
 
-from models import vggish_input, vggish_params
-from pathlib import Path
+from models import vggish_input
+
 
 class CMD3Dataset(Dataset):
     
@@ -20,10 +16,12 @@ class CMD3Dataset(Dataset):
 
     def __init__(
         self,
+        root_path: str,
         data_path: str,
         audio_path_prefix: str,
     ):
         super(CMD3Dataset, self).__init__()
+        self.root_path = root_path
         self.data_path = data_path
         self.audio_path_prefix = audio_path_prefix
 
@@ -37,7 +35,7 @@ class CMD3Dataset(Dataset):
         audio_paths = []
         for line in lines:
             audio_filename, label = line.split(".mkv")
-            audio_path = '/home/vic-kang/cmd3/cmd3_audio/dataset/' + audio_filename + '.wav'
+            audio_path = self.root_path + '/' + audio_filename + '.wav'
             audio_paths.append((audio_path, int(label)))
 
         print("num_audio: ", len(audio_paths))
@@ -56,8 +54,6 @@ class CMD3Dataset(Dataset):
             for i in range(sample.shape[0]):
                 samples.append((sample[i], int(label)))
 
-            print(len(samples))
-
         return samples
 
     def __getitem__(self, index: int) -> Dict[str, Any]:
@@ -72,4 +68,19 @@ class CMD3Dataset(Dataset):
         return outputs
 
     def __len__(self) -> int:
+        print(f"There are {len(self.audio_sample)} samples in the dataset.")
         return len(self.audio_sample)
+
+
+if __name__ == "__main__":
+
+    DATA_PATH = "cmd3_audio/dataset/set_splits/train_split2.csv"
+    AUDIO_PATH_PREFIX = "cmd3_audio/dataset/audio"
+
+
+    usd = CMD3Dataset(DATA_PATH,
+                      AUDIO_PATH_PREFIX
+                      )
+
+    print(f"There are {len(usd)} samples in the dataset.")
+    signal = usd[0]

@@ -76,7 +76,7 @@ def waveform_to_examples(data, sample_rate, return_tensor=True):
 
     if return_tensor:
         log_mel_examples = torch.tensor(
-            log_mel_examples, requires_grad=True)[:, None, :, :].float()
+            log_mel_examples, requires_grad=False)[:, None, :, :].float()
 
 
     return log_mel_examples

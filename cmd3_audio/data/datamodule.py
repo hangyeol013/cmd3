@@ -29,7 +29,8 @@ class CMD3DataModule(LightningDataModule):
     def train_dataloader(self) -> DataLoader:
         """Load train set loader."""
         self.train_set = CMD3Dataset(
-            data_path=osp.join(self.label_dir, "train_split2.csv"),
+            root_path = self.root_dir,
+            data_path=osp.join(self.label_dir, "train_split.csv"),
             audio_path_prefix=self.audio_dir,
         )
 
@@ -42,7 +43,8 @@ class CMD3DataModule(LightningDataModule):
     def val_dataloader(self) -> DataLoader:
         """Load validation set loader."""
         self.val_set = CMD3Dataset(
-            data_path=osp.join(self.label_dir, "val_split2.csv"),
+            root_path = self.root_dir,
+            data_path=osp.join(self.label_dir, "val_split.csv"),
             audio_path_prefix=self.audio_dir,
         )
 
@@ -55,7 +57,8 @@ class CMD3DataModule(LightningDataModule):
     def test_dataloader(self) -> DataLoader:
         """Load test set loader."""
         self.test_set = CMD3Dataset(
-            data_path=osp.join(self.label_dir, "test_split2.csv"),
+            root_path = self.root_dir,
+            data_path=osp.join(self.label_dir, "test_split.csv"),
             audio_path_prefix=self.audio_dir,
         )
 

@@ -6,14 +6,11 @@ from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.plugins import DDPPlugin
 
 from data.datamodule import CMD3DataModule
-
 from models.model import CMD3Audio
 
 
 @hydra.main(config_path="configs", config_name="config")
 def main(cfg: DictConfig):
-
-
     model = CMD3Audio(
         model_name=cfg.model.model_name,
         model_path=cfg.model.model_path,
@@ -22,7 +19,7 @@ def main(cfg: DictConfig):
         learning_rate=cfg.model.learning_rate,
         weight_decay=cfg.model.weight_decay,
         momentum=cfg.model.momentum,
-    )
+    )    
 
     data_module = CMD3DataModule(
         root_dir=cfg.root_dir,

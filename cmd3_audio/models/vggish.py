@@ -124,39 +124,48 @@ def _vgg():
 
 
 class VGGish(VGG):
-    def __init__(self, path, num_classes, pretrained=True):
+    def __init__(self, path, num_classes):
         super().__init__(make_layers())
-        if pretrained:
+        if path:
             state_dict = torch.load(path)
             super().load_state_dict(state_dict)
     
-        self.embeddings = nn.Sequential(
-            nn.Linear(512 * 4 * 6, 4096),
-            nn.ReLU(True),
-            nn.Linear(4096, 4096),
-            nn.ReLU(True)
-        )
+            self.embeddings = nn.Sequential(
+                nn.Linear(512 * 4 * 6, 4096),
+                nn.ReLU(True),
+                nn.Linear(4096, 4096),
+                nn.ReLU(True)
+            )
 
-        for param in self.parameters():
-            param.requires_grad = False
+            for param in self.parameters():
+                param.requires_grad = False
 
-        self.classifier = nn.Sequential(nn.Linear(4096, num_classes),
-                                        nn.ReLU(True))
+            self.classifier = nn.Sequential(nn.Linear(4096, num_classes),
+                                            nn.ReLU(True))
+        else:
+            self.embeddings = nn.Sequential(
+                nn.Linear(512 * 4 * 6, 4096),
+                nn.ReLU(True),
+                nn.Linear(4096, 4096),
+                nn.ReLU(True)
+            )
+            self.classifier = nn.Sequential(nn.Linear(4096, num_classes),
+                                            nn.ReLU(True))
 
 
     def forward(self, x, fs=None):
-        self.features.eval()
-        self.embeddings.eval()
+        # self.features.eval()
+        # self.embeddings.eval()
         
-        with torch.no_grad():
-            x = self.features(x)
-            # Transpose the output from features to
-            # remain compatible with vggish embeddings
-            x = torch.transpose(x, 1, 3)
-            x = torch.transpose(x, 1, 2)
-            x = x.contiguous()
-            x = x.view(x.size(0), -1)
-            x = self.embeddings(x)
+        # with torch.no_grad():
+        x = self.features(x)
+        # Transpose the output from features to
+        # remain compatible with vggish embeddings
+        x = torch.transpose(x, 1, 3)
+        x = torch.transpose(x, 1, 2)
+        x = x.contiguous()
+        x = x.view(x.size(0), -1)
+        x = self.embeddings(x)
         x = self.classifier(x)
 
         return x
