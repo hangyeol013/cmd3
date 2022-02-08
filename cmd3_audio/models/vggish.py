@@ -137,8 +137,8 @@ class VGGish(VGG):
                 nn.ReLU(True)
             )
 
-            for param in self.parameters():
-                param.requires_grad = False
+            # for param in self.parameters():
+            #     param.requires_grad = False
 
             self.classifier = nn.Sequential(nn.Linear(4096, num_classes),
                                             nn.ReLU(True))
