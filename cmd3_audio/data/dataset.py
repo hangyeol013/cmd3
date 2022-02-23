@@ -50,18 +50,20 @@ class CMD3Dataset(Dataset):
             print("path: ", path)
             audio_path, label = path
             sample = vggish_input.wavfile_to_examples(audio_path)
+            # sample_path = audio_path.split('dataset/')[-1]
 
             for i in range(sample.shape[0]):
-                samples.append((sample[i], int(label)))
+                samples.append((sample[i], int(label), audio_path))
 
         return samples
+        
 
     def __getitem__(self, index: int) -> Dict[str, Any]:
-        audio_sample, sample_label = self.audio_sample[index]
-        path_index = index // (len(self.audio_sample)+1)
-        audio_paths, _ = self.audio_paths[path_index]
-        audio_id = audio_paths.split(osp.sep)[-1]
-        outputs = {"label": sample_label, "id": audio_id}
+        audio_sample, sample_label, audio_path = self.audio_sample[index]
+        # path_index = index // (len(self.audio_sample) // len(self.audio_paths))
+        # audio_path, _ = self.audio_paths[path_index]
+        # audio_id = audio_path.split(osp.sep)[-1]
+        outputs = {"label": sample_label, "id": audio_path}
 
         outputs["audio"] = audio_sample
 

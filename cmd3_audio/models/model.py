@@ -35,6 +35,7 @@ class CMD3Audio(LightningModule):
 
         self.model = VGGish(model_path,
                             self.num_classes,
+                            self.feature_extraction
                             )
 
         self.criterion = CrossEntropyLoss()

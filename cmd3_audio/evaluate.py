@@ -1,6 +1,7 @@
 import hydra
 from omegaconf import DictConfig
 import os
+import numpy as np
 import pandas as pd
 from pytorch_lightning import Trainer
 from pytorch_lightning.plugins import DDPPlugin
@@ -49,12 +50,42 @@ def main(cfg: DictConfig):
 
     trainer.test(model, data_module)
 
-    preds, targets = [], []
+    preds, preds_label, targets, ids = [], [], [], []
     for output in model.test_outputs:
-        preds.append(output["preds"].cpu())
-        targets.append(output["targets"].cpu())
+        preds.extend(output["preds"].cpu())
+        preds_label.extend(np.argmax(output["preds"].cpu(), axis=1))
+        targets.extend(output["targets"].cpu())
+        ids.extend(output['id'])
+
+    # pred_files = []
+    # id_files = []
+    # target_files = []
+
+    # for i in list(set(ids)):
+    #     pred_file = 0
+    #     target_file = 0
+    #     for j in range(len(ids)):
+    #         if ids[j] == i:
+    #             pred_file += preds[j]
+    #             target_file += targets[j]
+        
+    #     id_files.append(i)
+    #     target_files.append(target_file)
+    #     pred_files.append(np.argmax(pred_file, axis=0).item())
+
+    # target_files = list(set(target_files))
+
+    # print(pred_files)
+    # print(target_files)
+    # print(len(pred_files))
+    # print(len(target_files))
+
+    # assert False
+        
     preds = torch.cat(preds)
     targets = torch.cat(targets)
+    preds_label = torch.cat(preds_label)
+    ids = np.hstack(ids)
 
     global_report = {}
     global_report["global_accuracy"] = get_global_accuracy(preds, targets)
@@ -71,12 +102,24 @@ def main(cfg: DictConfig):
     confusion_matrix = get_confusion_matrix(preds, targets)
     confusion_matrix_df = pd.DataFrame(confusion_matrix)
 
+    results_report = {}
+    results_report["file_path"] = ids
+    results_report["targets"] = targets
+    results_report["preds"] = preds_label
+    results_report_df = pd.DataFrame(results_report)
+
+    # results_file = {}
+    # results_file['file_path'] = id_files
+    # results_file['targets'] = target_files
+    # results_file['preds'] = pred_files
+
     if not os.path.exists(cfg.result_dir):
         os.makedirs(cfg.result_dir)
 
     global_report_df.to_csv(os.path.join(cfg.result_dir, "global_report.csv"))
     class_report_df.to_csv(os.path.join(cfg.result_dir, "class_report.csv"))
     confusion_matrix_df.to_csv(os.path.join(cfg.result_dir, "conf_matrix.csv"))
+    results_report_df.to_csv(os.path.join(cfg.result_dir, "result_reports.csv"))
 
 
 if __name__ == "__main__":

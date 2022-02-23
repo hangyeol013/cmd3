@@ -4,9 +4,9 @@ defaults:
   - dataset: cmd3
 
 root_dir: ${hydra:runtime.cwd}/cmd3_audio/dataset
-xp_name: cmd3_0208
-checkpoint: cmd3_logger-epoch=8-val_loss=0.00.ckpt
-full_checkpoint: ${hydra:runtime.cwd}/outputs/2022-02-06/13-55-35/checkpoints/${checkpoint}
+xp_name: test
+checkpoint: last.ckpt
+full_checkpoint: ${hydra:runtime.cwd}/outputs/2022-02-22/Train_AllLayers/checkpoints/${checkpoint}
 result_dir: ${hydra:runtime.cwd}/results/${xp_name}
 feature_dir: ${root_dir}/custom_features/${xp_name}
 num_epochs: 100
