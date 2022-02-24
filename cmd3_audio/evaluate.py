@@ -69,7 +69,7 @@ def main(cfg: DictConfig):
     audio_id_set = list(set(ids))
 
     for file_id in audio_id_set:
-        file_results[file_id] = {'preds': {}, 'target': 0}
+        file_results[file_id] = {'preds': {}, 'preds_f': 0, 'target': 0}
         file_results[file_id]['preds']['0'] = 0
         file_results[file_id]['preds']['1'] = 0
         file_results[file_id]['preds']['2'] = 0
@@ -81,7 +81,9 @@ def main(cfg: DictConfig):
                     file_results[file_id]['preds']['1'] += 1
                 elif out_preds == 2:
                     file_results[file_id]['preds']['2'] += 1
+                file_results[file_id]['preds_f'] = max(file_results[file_id]['preds'], key=file_results[file_id]['preds'].get)
                 file_results[file_id]['target'] = out_targets.item()
+
 
     global_report = {}
     global_report["global_accuracy"] = get_global_accuracy(preds, targets)
