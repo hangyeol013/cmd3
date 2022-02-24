@@ -84,7 +84,7 @@ def main(cfg: DictConfig):
                 file_results[file_id]['preds_f'] = max(file_results[file_id]['preds'], key=file_results[file_id]['preds'].get)
                 file_results[file_id]['target'] = out_targets.item()
 
-
+ 
     global_report = {}
     global_report["global_accuracy"] = get_global_accuracy(preds, targets)
     global_report["global_precision"] = get_global_precision(preds, targets)
