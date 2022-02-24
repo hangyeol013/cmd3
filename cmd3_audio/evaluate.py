@@ -64,6 +64,25 @@ def main(cfg: DictConfig):
     ids = np.hstack(ids)
     time_frame = torch.cat(time_frame)
 
+    file_results = {}
+    total_results = []
+    audio_id_set = list(set(ids))
+
+    for file_id in audio_id_set:
+        file_results[file_id] = {'preds': {}, 'target': 0}
+        file_results[file_id]['preds']['0'] = 0
+        file_results[file_id]['preds']['1'] = 0
+        file_results[file_id]['preds']['2'] = 0
+        for audio_id, out_preds, out_targets in zip(ids, preds_label, targets):
+            if audio_id == file_id:
+                if out_preds == 0:
+                    file_results[file_id]['preds']['0'] += 1
+                elif out_preds == 1:
+                    file_results[file_id]['preds']['1'] += 1
+                elif out_preds == 2:
+                    file_results[file_id]['preds']['2'] += 1
+                file_results[file_id]['target'] = out_targets.item()
+
     global_report = {}
     global_report["global_accuracy"] = get_global_accuracy(preds, targets)
     global_report["global_precision"] = get_global_precision(preds, targets)
@@ -86,6 +105,11 @@ def main(cfg: DictConfig):
     results_report["preds"] = preds_label
     results_report_df = pd.DataFrame(results_report)
 
+    file_report = {}
+    file_report['file_path'] = file_results.keys()
+    file_report['results'] = file_results.values()
+    file_report_df = pd.DataFrame(file_report)
+
     if not os.path.exists(cfg.result_dir):
         os.makedirs(cfg.result_dir)
 
@@ -93,6 +117,7 @@ def main(cfg: DictConfig):
     class_report_df.to_csv(os.path.join(cfg.result_dir, "class_report.csv"))
     confusion_matrix_df.to_csv(os.path.join(cfg.result_dir, "conf_matrix.csv"))
     results_report_df.to_csv(os.path.join(cfg.result_dir, "result_reports.csv"))
+    file_report_df.to_csv(os.path.join(cfg.result_dir, "file_reports.csv"))
 
 
 if __name__ == "__main__":

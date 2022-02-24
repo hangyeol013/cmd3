@@ -5,6 +5,7 @@ defaults:
 
 root_dir: ${hydra:runtime.cwd}/cmd3_audio/dataset
 xp_name: cmd3_0222_All_e20
+# xp_name: test
 checkpoint: cmd3_0222-epoch=20-val_loss=0.00.ckpt
 full_checkpoint: ${hydra:runtime.cwd}/outputs/2022-02-22/Train_AllLayers/checkpoints/${checkpoint}
 result_dir: ${hydra:runtime.cwd}/results/${xp_name}
