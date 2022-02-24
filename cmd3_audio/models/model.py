@@ -137,6 +137,7 @@ class CMD3Audio(LightningModule):
         inputs = batch["audio"]
 
         clip_ids = batch["id"]
+        time_frames = batch['time_frame']
         preds = self.model(inputs).squeeze()
         if preds.ndim == 1:
             preds = preds[None, :]
@@ -147,6 +148,7 @@ class CMD3Audio(LightningModule):
             "preds": preds,
             "targets": targets,
             "id": clip_ids,
+            "time_frame": time_frames
         }
 
     def test_epoch_end(self, outputs: torch.Tensor):

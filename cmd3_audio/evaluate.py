@@ -50,42 +50,19 @@ def main(cfg: DictConfig):
 
     trainer.test(model, data_module)
 
-    preds, preds_label, targets, ids = [], [], [], []
-    for output in model.test_outputs:
-        preds.extend(output["preds"].cpu())
-        preds_label.extend(np.argmax(output["preds"].cpu(), axis=1))
-        targets.extend(output["targets"].cpu())
+    preds, preds_label, targets, ids, time_frame = [], [], [], [], []
+    for i, output in enumerate(model.test_outputs):
+        preds.append(output["preds"].cpu())
+        preds_label.append(np.argmax(output["preds"].cpu(), axis=1))
+        targets.append(output["targets"].cpu())
         ids.extend(output['id'])
-
-    # pred_files = []
-    # id_files = []
-    # target_files = []
-
-    # for i in list(set(ids)):
-    #     pred_file = 0
-    #     target_file = 0
-    #     for j in range(len(ids)):
-    #         if ids[j] == i:
-    #             pred_file += preds[j]
-    #             target_file += targets[j]
-        
-    #     id_files.append(i)
-    #     target_files.append(target_file)
-    #     pred_files.append(np.argmax(pred_file, axis=0).item())
-
-    # target_files = list(set(target_files))
-
-    # print(pred_files)
-    # print(target_files)
-    # print(len(pred_files))
-    # print(len(target_files))
-
-    # assert False
+        time_frame.append(output['time_frame'].cpu())
         
     preds = torch.cat(preds)
     targets = torch.cat(targets)
     preds_label = torch.cat(preds_label)
     ids = np.hstack(ids)
+    time_frame = torch.cat(time_frame)
 
     global_report = {}
     global_report["global_accuracy"] = get_global_accuracy(preds, targets)
@@ -103,15 +80,11 @@ def main(cfg: DictConfig):
     confusion_matrix_df = pd.DataFrame(confusion_matrix)
 
     results_report = {}
+    results_report['start_time'] = time_frame
     results_report["file_path"] = ids
     results_report["targets"] = targets
     results_report["preds"] = preds_label
     results_report_df = pd.DataFrame(results_report)
-
-    # results_file = {}
-    # results_file['file_path'] = id_files
-    # results_file['targets'] = target_files
-    # results_file['preds'] = pred_files
 
     if not os.path.exists(cfg.result_dir):
         os.makedirs(cfg.result_dir)
