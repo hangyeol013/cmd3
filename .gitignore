@@ -1,0 +1,6 @@
+cmd3_audio/models/vggish_pretrained.pth
+cmd3_video/models/resnet_pretrained.pth
+outputs/
+dataset/
+custom_features/
+kang_director_classification/

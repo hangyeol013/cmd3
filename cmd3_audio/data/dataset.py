@@ -74,8 +74,8 @@ class CMD3Dataset(Dataset):
 
 if __name__ == "__main__":
 
-    DATA_PATH = "cmd3_audio/dataset/set_splits/train_split2.csv"
-    AUDIO_PATH_PREFIX = "cmd3_audio/dataset/audio"
+    DATA_PATH = "./dataset/set_splits/train_split2.csv"
+    AUDIO_PATH_PREFIX = "./dataset/audio"
 
 
     usd = CMD3Dataset(DATA_PATH,

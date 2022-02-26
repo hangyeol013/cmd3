@@ -20,8 +20,8 @@ class CMD3DataModule(LightningDataModule):
         super(CMD3DataModule, self).__init__()
 
         self.root_dir = root_dir
-        self.audio_dir = osp.join(self.root_dir, 'audio')
-        self.label_dir = osp.join(self.root_dir, "set_splits")
+        self.audio_dir = osp.join(self.root_dir, 'dataset/audio')
+        self.label_dir = osp.join(self.root_dir, "dataset/set_splits")
 
         self.batch_size = batch_size
         self.num_workers = num_workers
