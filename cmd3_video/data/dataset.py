@@ -164,7 +164,8 @@ class CMD3Dataset(Dataset):
 
     def __getitem__(self, index: int) -> Dict[str, Any]:
         sample_framepaths, sample_label = self.sample_paths[index]
-        clip_id = sample_framepaths[0].split(osp.sep)[-3]
+        # clip_id = sample_framepaths[0].split(osp.sep)[-3]
+        clip_id = sample_framepaths[0].split('/image')[0]
         outputs = {"label": sample_label, "id": clip_id}
 
         for current_modality in self.modalities:
@@ -181,4 +182,6 @@ class CMD3Dataset(Dataset):
         return outputs
 
     def __len__(self) -> int:
+        print("video nums: ", len(self.video_paths))
+        print("sample nums: ", len(self.sample_paths))
         return len(self.sample_paths)

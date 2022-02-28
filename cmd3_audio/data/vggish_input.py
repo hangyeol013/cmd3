@@ -21,13 +21,15 @@ import torch
 import numpy as np
 import resampy
 
-from . import mel_features
-from . import vggish_params
+import mel_features
+import vggish_params
 
 import soundfile as sf
+import os
+from pathlib import Path
 
 
-def waveform_to_examples(data, sample_rate, return_tensor=True):
+def waveform_to_examples(data, sample_rate, example_path, return_tensor=True):
     """Converts audio waveform into an array of examples for VGGish.
 
   Args:
@@ -78,8 +80,17 @@ def waveform_to_examples(data, sample_rate, return_tensor=True):
         log_mel_examples = torch.tensor(
             log_mel_examples, requires_grad=False)[:, None, :, :].float()
 
+    save_path = example_path.replace("audio", "audio_samples")[:28]
+    file_name = example_path.replace("audio", "audio_samples")[29:].replace('wav', 'pt')
+    # print(save_path)
+    # print(file_name)
+    # assert False
+    if not os.path.exists(save_path):
+      os.makedirs(save_path)
+    save_file_name = os.path.join(save_path, file_name)
+    torch.save(log_mel_examples, save_file_name)
 
-    return log_mel_examples
+    # return log_mel_examples
 
 
 def wavfile_to_examples(wav_file, return_tensor=True):
@@ -96,4 +107,4 @@ def wavfile_to_examples(wav_file, return_tensor=True):
     wav_data, sr = sf.read(wav_file, dtype='int16')
     assert wav_data.dtype == np.int16, 'Bad sample type: %r' % wav_data.dtype
     samples = wav_data / 32768.0  # Convert to [-1.0, +1.0]
-    return waveform_to_examples(samples, sr, return_tensor)
+    return waveform_to_examples(samples, sr, wav_file, return_tensor)

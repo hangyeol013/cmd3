@@ -25,18 +25,24 @@ def main(cfg: DictConfig):
     model = CMD3Video.load_from_checkpoint(
         cfg.full_checkpoint,
         model_name=cfg.model.model_name,
-        model_path=None,
+        model_depth=cfg.model.model_depth,
+        pretrained_path=cfg.model.pretrained_path,
         feature_extraction=cfg.model.feature_extraction,
         optimizer=cfg.model.optimizer,
         learning_rate=cfg.model.learning_rate,
         weight_decay=cfg.model.weight_decay,
         momentum=cfg.model.momentum,
     )
-
     data_module = CMD3DataModule(
         root_dir=cfg.root_dir,
+        modalities=cfg.model.modalities,
+        frame_size=cfg.model.frame_size,
+        n_samples=cfg.model.n_samples,
+        clip_duration=cfg.clip_duration,
         batch_size=cfg.compnode.batch_size,
         num_workers=cfg.compnode.num_workers,
+        augmentation=cfg.augmentation,
+        normalize=cfg.model.normalize,
     )
 
     trainer = Trainer(
@@ -56,13 +62,17 @@ def main(cfg: DictConfig):
         preds_label.append(np.argmax(output["preds"].cpu(), axis=1))
         targets.append(output["targets"].cpu())
         ids.extend(output['id'])
-        time_frame.append(output['time_frame'].cpu())
+        # time_frame.append(output['time_frame'].cpu())
         
+    # print(targets)
+    # print(preds)
+    # print(preds_label)
+    # assert False
     preds = torch.cat(preds)
     targets = torch.cat(targets)
     preds_label = torch.cat(preds_label)
     ids = np.hstack(ids)
-    time_frame = torch.cat(time_frame)
+    # time_frame = torch.cat(time_frame)
 
     file_results = {}
     audio_id_set = list(set(ids))
@@ -83,7 +93,9 @@ def main(cfg: DictConfig):
                 file_results[file_id]['preds_f'] = max(file_results[file_id]['preds'], key=file_results[file_id]['preds'].get)
                 file_results[file_id]['target'] = out_targets.item()
 
- 
+    assert False
+
+
     global_report = {}
     global_report["global_accuracy"] = get_global_accuracy(preds, targets)
     global_report["global_precision"] = get_global_precision(preds, targets)
@@ -100,7 +112,7 @@ def main(cfg: DictConfig):
     confusion_matrix_df = pd.DataFrame(confusion_matrix)
 
     results_report = {}
-    results_report['start_time'] = time_frame
+    # results_report['start_time'] = time_frame
     results_report["file_path"] = ids
     results_report["targets"] = targets
     results_report["preds"] = preds_label

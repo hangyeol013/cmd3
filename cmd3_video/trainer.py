@@ -14,6 +14,7 @@ def main(cfg: DictConfig):
 
     model = CMD3Video(
         model_name=cfg.model.model_name,
+        model_depth=cfg.model.model_depth,
         pretrained_path=cfg.model.pretrained_path,
         feature_extraction=cfg.model.feature_extraction,
         optimizer=cfg.model.optimizer,

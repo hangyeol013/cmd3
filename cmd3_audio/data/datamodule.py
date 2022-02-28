@@ -58,7 +58,7 @@ class CMD3DataModule(LightningDataModule):
         """Load test set loader."""
         self.test_set = CMD3Dataset(
             root_path = self.root_dir,
-            data_path=osp.join(self.label_dir, "test_split.csv"),
+            data_path=osp.join(self.label_dir, "test_split2.csv"),
             audio_path_prefix=self.audio_dir,
         )
 

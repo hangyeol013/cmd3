@@ -1,9 +1,9 @@
-import os.path as osp
+import os
+import torch
 from typing import Any, Dict, List, Tuple
 
 from torch.utils.data import Dataset
 
-from models import vggish_input
 
 
 class CMD3Dataset(Dataset):
@@ -35,10 +35,8 @@ class CMD3Dataset(Dataset):
         audio_paths = []
         for line in lines:
             audio_filename, label = line.split(".mkv")
-            audio_path = self.root_path + '/' + audio_filename + '.wav'
+            audio_path = self.root_path + '/dataset/' + audio_filename + '.wav'
             audio_paths.append((audio_path, int(label)))
-
-        print("num_audio: ", len(audio_paths))
 
         return audio_paths
 
@@ -47,10 +45,12 @@ class CMD3Dataset(Dataset):
         samples = []
         for path in audio_paths:
 
-            print("path: ", path)
+            # print("path: ", path)
             audio_path, label = path
-            # audio_path = audio_path.split('dataset/')[-1]
-            sample = vggish_input.wavfile_to_examples(audio_path)
+            save_path = audio_path.replace("audio", "audio_samples")[:28]
+            file_name = audio_path.replace("audio", "audio_samples")[28:].replace('wav', 'pt')
+            save_file_name = os.path.join(save_path, file_name)
+            sample = torch.load(save_file_name)
 
             for i in range(sample.shape[0]):
                 audio_time = round(i*0.96, 2)
@@ -68,7 +68,8 @@ class CMD3Dataset(Dataset):
         return outputs
 
     def __len__(self) -> int:
-        print(f"There are {len(self.audio_sample)} samples in the dataset.")
+        print("audio num: ", len(self.audio_paths))
+        print("sample num: ", len(self.audio_sample))
         return len(self.audio_sample)
 
 
