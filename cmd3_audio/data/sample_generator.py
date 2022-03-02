@@ -29,6 +29,6 @@ def generate_audioSamples(file_path, sample_path):
 if __name__ == "__main__":
 
     DATA_PATH = "./dataset/set_splits/cmd3_labels.csv"
-    SAMPLE_PATH = "./dataset/audio_samples"
+    SAMPLE_PATH = "./dataset/audio_samples_new"
 
     generate_audioSamples(DATA_PATH, SAMPLE_PATH)

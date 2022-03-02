@@ -63,7 +63,9 @@ class CMD3Dataset(Dataset):
         for line in lines:
             video_filename, label = line.split(".mkv")
             video_path = osp.join(self.video_path_prefix, video_filename[6:])
-            video_paths.append((video_path, int(label)))
+            for clips in os.listdir(video_path):
+                clip_path = osp.join(video_path, clips)
+                video_paths.append((clip_path, int(label)))
             # for shot_index in os.listdir(video_path):
             #     video_shot_path = osp.join(video_path, shot_index)
             #     video_paths.append((video_shot_path, int(label)))

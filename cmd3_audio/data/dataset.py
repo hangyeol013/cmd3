@@ -53,7 +53,7 @@ class CMD3Dataset(Dataset):
             sample = torch.load(save_file_name)
 
             for i in range(sample.shape[0]):
-                audio_time = round(i*0.96, 2)
+                audio_time = i
                 samples.append((sample[i], int(label), audio_path, audio_time))
 
         return samples

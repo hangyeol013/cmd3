@@ -71,6 +71,7 @@ def waveform_to_examples(data, sample_rate, example_path, return_tensor=True):
         vggish_params.EXAMPLE_WINDOW_SECONDS * features_sample_rate))
     example_hop_length = int(round(
         vggish_params.EXAMPLE_HOP_SECONDS * features_sample_rate))
+    
     log_mel_examples = mel_features.frame(
         log_mel,
         window_length=example_window_length,
@@ -82,9 +83,7 @@ def waveform_to_examples(data, sample_rate, example_path, return_tensor=True):
 
     save_path = example_path.replace("audio", "audio_samples")[:28]
     file_name = example_path.replace("audio", "audio_samples")[29:].replace('wav', 'pt')
-    # print(save_path)
-    # print(file_name)
-    # assert False
+
     if not os.path.exists(save_path):
       os.makedirs(save_path)
     save_file_name = os.path.join(save_path, file_name)

@@ -41,7 +41,7 @@ class CMD3DataModule(LightningDataModule):
         super(CMD3DataModule, self).__init__()
 
         self.root_dir = root_dir
-        self.frame_dir = osp.join(self.root_dir, "dataset/video_jpg_096")
+        self.frame_dir = osp.join(self.root_dir, "dataset/video_jpg")
         self.feature_dir = osp.join(self.root_dir, "custom_features/cmd3_video")
         self.label_dir = osp.join(self.root_dir, "dataset/set_splits")
 
