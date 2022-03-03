@@ -122,6 +122,8 @@ class CMD3Video(LightningModule):
         recall = self.train_recall(preds, targets)
         self._shared_log_step("train", loss, accuracy, precision, recall)
 
+        torch.cuda.empty_cache() 
+
         return {"loss": loss, "preds": preds, "targets": targets}
 
     def validation_step(self, batch: torch.Tensor, batch_idx: torch.Tensor):
@@ -131,6 +133,7 @@ class CMD3Video(LightningModule):
         precision = self.val_precision(preds, targets)
         recall = self.val_recall(preds, targets)
         self._shared_log_step("val", loss, accuracy, precision, recall)
+        torch.set_grad_enabled(False)
 
         return {"loss": loss, "preds": preds, "targets": targets}
 

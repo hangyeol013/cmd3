@@ -1,14 +1,7 @@
-import os
-from vggish_input import wavfile_to_examples
+from data.vggish_input import wavfile_to_examples
 
 
 def generate_audioSamples(file_path, sample_path):
-
-    # for audio_year in os.listdir(file_path):
-    #     print(audio_year)
-
-    #     for audio_file in os.listdir(os.path.join(file_path, audio_year)):
-    #         audio_path = os.path.join(file_path, audio_year, audio_file)
 
     with open(file_path) as f:
             lines = f.read().splitlines()

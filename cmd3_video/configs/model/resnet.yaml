@@ -3,7 +3,7 @@ model_depth: 18
 pretrained_path: ${hydra:runtime.cwd}/cmd3_video/models/resnet_pretrained.pth
 feature_extraction: False
 optimizer: sgd
-learning_rate: 1e-4
+learning_rate: 5e-5
 weight_decay: 1e-5
 momentum: 0.9
 frame_size: 112

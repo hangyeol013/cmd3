@@ -66,9 +66,6 @@ class CMD3Dataset(Dataset):
             for clips in os.listdir(video_path):
                 clip_path = osp.join(video_path, clips)
                 video_paths.append((clip_path, int(label)))
-            # for shot_index in os.listdir(video_path):
-            #     video_shot_path = osp.join(video_path, shot_index)
-            #     video_paths.append((video_shot_path, int(label)))
 
         return video_paths
 
@@ -92,15 +89,7 @@ class CMD3Dataset(Dataset):
             frame_list = np.array(sorted(os.listdir(video_path)))
             max_frames = len(frame_list)
 
-            if self.clip_sampling == "random":
-                sample_indices = self._sample_randomclips(
-                    max_frames, self.clip_duration
-                )
-
-            elif self.clip_sampling == "uniform":
-                sample_indices = self._sample_uniformclips(
-                    max_frames, self.clip_duration
-                )
+            sample_indices = self._sample_uniformclips(max_frames, self.clip_duration)
 
             for start_index, end_index in sample_indices:
                 indices = np.linspace(
@@ -128,62 +117,18 @@ class CMD3Dataset(Dataset):
 
         return frames
 
-    def _load_depth(self, sample_framepaths: List[str]) -> torch.Tensor:
-        """Load and pre-process depth maps."""
-        depth_maps = []
-        for frame_path in sample_framepaths:
-            split_framepath = frame_path.split(osp.sep)
-            path_prefix = self.feature_path_prefix
-            path_sufix = osp.join(*split_framepath[-4:])[:-4] + ".npy"
-            depth_path = osp.join(path_prefix, "depth_maps", path_sufix)
-            depth_maps.append(torch.from_numpy(load_npy(depth_path)) * 255)
-
-        depth_maps = torch.stack(depth_maps)
-        if self.transform is not None:
-            depth_maps = self.transform(depth_maps)
-
-        return depth_maps
-
-    def _load_layer(self, sample_framepaths: List[str]) -> torch.Tensor:
-        """Load and pre-process layer maps."""
-        layer_maps = []
-        for frame_path in sample_framepaths:
-            split_framepath = frame_path.split(osp.sep)
-            path_prefix = self.feature_path_prefix
-            path_sufix = osp.join(*split_framepath[-4:])[:-4] + ".npy"
-            layer_path = osp.join(path_prefix, "layer_maps", path_sufix)
-            raw_layer_map = load_npy(layer_path)
-            max_cluster = raw_layer_map.max()
-            layer_maps.append(
-                torch.from_numpy(raw_layer_map).float() / max_cluster * 255
-            )
-
-        layer_maps = torch.stack(layer_maps)
-        if self.transform is not None:
-            layer_maps = self.transform(layer_maps)
-
-        return layer_maps
 
     def __getitem__(self, index: int) -> Dict[str, Any]:
         sample_framepaths, sample_label = self.sample_paths[index]
-        # clip_id = sample_framepaths[0].split(osp.sep)[-3]
+
         clip_id = sample_framepaths[0].split('/image')[0]
         outputs = {"label": sample_label, "id": clip_id}
 
-        for current_modality in self.modalities:
-            if current_modality == "raw":
-                frames = self._load_raw(sample_framepaths)
-                outputs["video"] = frames
-            elif current_modality == "depth":
-                depth_maps = self._load_depth(sample_framepaths)
-                outputs["depth"] = depth_maps
-            elif current_modality == "layer":
-                layer_maps = self._load_layer(sample_framepaths)
-                outputs["layer"] = layer_maps
+        frames = self._load_raw(sample_framepaths)
+        outputs["video"] = frames
 
         return outputs
 
     def __len__(self) -> int:
-        print("video nums: ", len(self.video_paths))
-        print("sample nums: ", len(self.sample_paths))
+        print("video nums: ", len(self.video_paths), "sample nums: ", len(self.sample_paths))
         return len(self.sample_paths)

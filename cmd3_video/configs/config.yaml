@@ -4,11 +4,11 @@ defaults:
   - dataset: cmd3
 
 root_dir: ${hydra:runtime.cwd}
-xp_name: cmd3_video_1667
+xp_name: cmd3_0303_video_all
 # xp_name: test
-checkpoint: cmd3_0222_All_e20-epoch=87-val_loss=0.00.ckpt
+checkpoint: cmd3_0303_video_all-epoch=2-val_loss=0.00.ckpt
 # checkpoint: last.ckpt
-full_checkpoint: ${hydra:runtime.cwd}/outputs/video/2022-02-26/allLayers/checkpoints/${checkpoint}
+full_checkpoint: ${hydra:runtime.cwd}/outputs/video/2022-03-03/video_all/checkpoints/${checkpoint}
 result_dir: ${hydra:runtime.cwd}/results/video/${xp_name}
 feature_dir: ${root_dir}/custom_features/video/${xp_name}
 num_epochs: 100

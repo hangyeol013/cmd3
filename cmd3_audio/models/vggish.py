@@ -64,17 +64,6 @@ class VGGish(VGG):
             
             self.classifier = nn.Linear(128, num_classes)
 
-            # self.embeddings[4] = nn.Linear(4096, num_classes)
-
-            # self.embeddings = nn.Sequential(
-            #     nn.Linear(512 * 4 * 6, 4096),
-            #     nn.ReLU(True),
-            #     nn.Linear(4096, 4096),
-            #     nn.ReLU(True)
-            # )
-            # self.classifier = nn.Sequential(nn.Linear(4096, num_classes),
-            #                                 nn.ReLU(True))
-
 
     def forward(self, x, fs=None):
         

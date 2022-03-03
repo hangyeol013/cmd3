@@ -99,6 +99,7 @@ class CMD3DataModule(LightningDataModule):
         return DataLoader(
             self.train_set,
             batch_size=self.batch_size,
+            shuffle=True,
             num_workers=self.num_workers,
         )
 
@@ -118,6 +119,7 @@ class CMD3DataModule(LightningDataModule):
         return DataLoader(
             self.val_set,
             batch_size=self.batch_size,
+            shuffle=True,
             num_workers=self.num_workers,
         )
 

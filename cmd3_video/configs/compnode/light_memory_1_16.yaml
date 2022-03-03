@@ -1,5 +1,5 @@
-batch_size: 16
-num_workers: 10
+batch_size: 8
+num_workers: 5
 num_gpus: 1
 num_nodes: 1
 accelerator: ddp

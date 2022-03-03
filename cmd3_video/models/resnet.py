@@ -272,11 +272,7 @@ def make_resnet(
             for param in model.parameters():
                 param.requires_grad = False
 
-        model.fc = nn.Sequential(
-            nn.Linear(model.fc.in_features, 256),
-            nn.ReLU(),
-            nn.Linear(256, num_classes),
-        )
+        model.fc = nn.Linear(512, 3)
 
     else:
         model = generate_model(

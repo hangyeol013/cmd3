@@ -1,5 +1,0 @@
-batch_size: 16
-num_workers: 10
-num_gpus: 0
-num_nodes: 0
-accelerator: cpu

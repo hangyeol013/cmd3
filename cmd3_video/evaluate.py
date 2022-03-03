@@ -62,28 +62,24 @@ def main(cfg: DictConfig):
         preds_label.append(np.argmax(output["preds"].cpu(), axis=1))
         targets.append(output["targets"].cpu())
         ids.extend(output['id'])
-        # time_frame.append(output['time_frame'].cpu())
         
-    # print(targets)
-    # print(preds)
-    # print(preds_label)
-    # assert False
     preds = torch.cat(preds)
     targets = torch.cat(targets)
     preds_label = torch.cat(preds_label)
     ids = np.hstack(ids)
-    # time_frame = torch.cat(time_frame)
 
     file_results = {}
-    audio_id_set = list(set(ids))
+    vidio_id_set = list(set(ids))
 
-    for file_id in audio_id_set:
+    for clip_id in vidio_id_set:
+        file_id = clip_id.split('/clip')[0]
         file_results[file_id] = {'preds': {}, 'preds_f': 0, 'target': 0}
         file_results[file_id]['preds']['0'] = 0
         file_results[file_id]['preds']['1'] = 0
         file_results[file_id]['preds']['2'] = 0
-        for audio_id, out_preds, out_targets in zip(ids, preds_label, targets):
-            if audio_id == file_id:
+        for video_clip_id, out_preds, out_targets in zip(ids, preds_label, targets):
+            video_id = video_clip_id.split('/clip')[0]
+            if video_id == file_id:
                 if out_preds == 0:
                     file_results[file_id]['preds']['0'] += 1
                 elif out_preds == 1:
@@ -92,8 +88,6 @@ def main(cfg: DictConfig):
                     file_results[file_id]['preds']['2'] += 1
                 file_results[file_id]['preds_f'] = max(file_results[file_id]['preds'], key=file_results[file_id]['preds'].get)
                 file_results[file_id]['target'] = out_targets.item()
-
-    assert False
 
 
     global_report = {}
@@ -112,7 +106,6 @@ def main(cfg: DictConfig):
     confusion_matrix_df = pd.DataFrame(confusion_matrix)
 
     results_report = {}
-    # results_report['start_time'] = time_frame
     results_report["file_path"] = ids
     results_report["targets"] = targets
     results_report["preds"] = preds_label
