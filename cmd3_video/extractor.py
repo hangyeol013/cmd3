@@ -16,19 +16,27 @@ def main(cfg: DictConfig):
     feature_extractor = CMD3Video.load_from_checkpoint(
         cfg.full_checkpoint,
         model_name=cfg.model.model_name,
-        model_path = None,
+        model_depth=cfg.model.model_depth,
+        pretrained_path=None,
         feature_extraction=cfg.model.feature_extraction,
         optimizer=cfg.model.optimizer,
         learning_rate=cfg.model.learning_rate,
         weight_decay=cfg.model.weight_decay,
         momentum=cfg.model.momentum,
     )
+
     feature_extractor.model.classifier = torch.nn.Identity()
 
     data_module = CMD3DataModule(
         root_dir=cfg.root_dir,
+        modalities=cfg.model.modalities,
+        frame_size=cfg.model.frame_size,
+        n_samples=cfg.model.n_samples,
+        clip_duration=cfg.clip_duration,
         batch_size=cfg.compnode.batch_size,
         num_workers=cfg.compnode.num_workers,
+        augmentation=cfg.augmentation,
+        normalize=cfg.model.normalize,
     )
 
     trainer = Trainer(

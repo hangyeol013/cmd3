@@ -4,11 +4,11 @@ defaults:
   - dataset: cmd3
 
 root_dir: ${hydra:runtime.cwd}
-xp_name: cmd3_0303_all_last
+xp_name: cmd3_audio_last_0305
 # xp_name: test
-checkpoint: last.ckpt
-checkpoint: cmd3_0303_all-epoch=2-val_loss=0.00.ckpt
-full_checkpoint: ${hydra:runtime.cwd}/outputs/audio/2022-03-03/audio_all/checkpoints/${checkpoint}
+# checkpoint: last.ckpt
+checkpoint: cmd3_audio_last_0305-epoch=15-val_loss=0.00.ckpt
+full_checkpoint: ${hydra:runtime.cwd}/outputs/2022-03-05/audio_last/checkpoints/${checkpoint}
 result_dir: ${hydra:runtime.cwd}/results/audio/${xp_name}
 feature_dir: ${root_dir}/custom_features/audio/${xp_name}
-num_epochs: 100
+num_epochs: 20

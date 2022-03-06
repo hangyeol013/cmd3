@@ -5,3 +5,5 @@ dataset/
 custom_features/
 kang_director_classification/
 cmd3_visual_old
+results/old
+cmd3_multi/

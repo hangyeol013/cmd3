@@ -268,9 +268,9 @@ def make_resnet(
         model.load_state_dict(pretrained_params["state_dict"])
 
         # Only use the pretrained model as a feature extractor
-        if feature_extraction:
-            for param in model.parameters():
-                param.requires_grad = False
+        # if feature_extraction:
+        # for param in model.parameters():
+        #     param.requires_grad = False
 
         model.fc = nn.Linear(512, 3)
 

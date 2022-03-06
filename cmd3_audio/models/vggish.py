@@ -54,9 +54,9 @@ class VGGish(VGG):
             state_dict = torch.load(path)
             super().load_state_dict(state_dict)
 
-            if feature_extraction:
-                for param in self.parameters():
-                    param.requires_grad = False
+            # if feature_extraction:
+            # for param in self.parameters():
+            #     param.requires_grad = False
 
             self.classifier = nn.Linear(128, num_classes)
 

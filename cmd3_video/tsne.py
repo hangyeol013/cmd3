@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 
 def fix_random_seeds():
-    seed = 10
+    seed = 1
     random.seed(seed)
     torch.manual_seed(seed)
     np.random.seed(seed)
@@ -153,15 +153,15 @@ def visualize_tsne(tsne, labels, mode, plot_size=1000, max_image_size=100):
 
 
 
-def visualize_tsne_points_both(tx, ty, gt_labels, pd_labels):
-    fig = plt.figure()
+def visualize_tsne_points_both(tx, ty, gt_labels, pd_labels, file_name):
+    fig = plt.figure(figsize=(8,6), dpi=1200)
     ax = fig.add_subplot(111)
 
     for label in colors_per_class:
         gt_indices = [i for i, l in enumerate(gt_labels) if l == label]
         pd_indices = [i for i, l in enumerate(pd_labels) if l == label]
-        print(label, '(groundTruth): ', len(gt_indices))
-        print(label, '(predictions): ', len(pd_indices))
+        print(label, '(groundTruth): ', len(gt_indices), '|', '(predictions): ', len(pd_indices))
+        # print(label, '(predictions): ', len(pd_indices))
         color_correct = np.array([colors_per_class[label][::-1]], dtype=float) / 255
 
         gt_tx = np.take(tx, gt_indices)
@@ -173,24 +173,25 @@ def visualize_tsne_points_both(tx, ty, gt_labels, pd_labels):
         ax.scatter(pd_tx, pd_ty, c=color_correct, label='{}_pd'.format(label), marker = 'x', alpha=0.3)
 
     # plt.show()
-    plt.savefig('tsne.png')
+    plt.savefig(file_name)
 
 
-def visualize_both(tsne, gt_labels, pd_labels, plot_size=1000, max_image_size=100):
+def visualize_both(tsne, gt_labels, pd_labels, file_name, plot_size=1000, max_image_size=100):
     tx = tsne[:, 0]
     ty = tsne[:, 1]
 
     tx = scale_to_01_range(tx)
     ty = scale_to_01_range(ty)
 
-    visualize_tsne_points_both(tx, ty, gt_labels, pd_labels)
+    visualize_tsne_points_both(tx, ty, gt_labels, pd_labels, file_name)
 
-def tsne_vis(result_path, tsne_mode):
 
-    results = np.load('{}/features.pk'.format(result_path), allow_pickle=True)
+def tsne_vis(feature_path, result_path, tsne_mode, save_path):
 
-    cmd8_infos = pd.read_csv('cmd3_audio/dataset/set_splits/cmd8_infos.csv')
-    cmd3_results = pd.read_csv('results/cmd3_0222_All_e20/result_reports.csv')
+    feature = np.load('{}/features.pk'.format(feature_path), allow_pickle=True)
+
+    # cmd3_results = pd.read_csv('results/cmd3_0222_All_e20/result_reports.csv')
+    cmd3_results = pd.read_csv(result_path)
 
     gt_labels = []
     pd_labels = []
@@ -199,14 +200,14 @@ def tsne_vis(result_path, tsne_mode):
     years = []
     colors = []
 
-    for i in range(len(results)):
+    for i in range(len(feature)):
         video_index = i
         gt_label = cmd3_results.iloc[video_index].targets.item()
         pd_label = cmd3_results.iloc[video_index].preds.item()
         gt_labels.append(gt_label)
         pd_labels.append(pd_label)
 
-    features_tsne = results
+    features_tsne = feature
 
     print('features_shape: ', features_tsne.shape)
     # t-SNE part
@@ -219,7 +220,7 @@ def tsne_vis(result_path, tsne_mode):
     elif tsne_mode == 'file_names':
         visualize_tsne(tsne, file_names, tsne_mode)
     elif tsne_mode == 'both_labels':
-        visualize_both(tsne, gt_labels, pd_labels)
+        visualize_both(tsne, gt_labels, pd_labels, save_path)
     elif tsne_mode == 'movie_names':
         visualize_tsne(tsne, movie_names, tsne_mode)
     elif tsne_mode == 'years':
@@ -230,9 +231,23 @@ def tsne_vis(result_path, tsne_mode):
 
 def main():
 
-    result_path = 'cmd3_audio/dataset/custom_features/cmd3_0222_All_last'
+    mode = 'video'
     tsne_mode = 'both_labels'
-    tsne_vis(result_path, tsne_mode)
+
+    if mode == 'video':
+        xp_name = 'cmd3_video_last_0305'
+        feature_path = 'custom_features/video/{}'.format(xp_name)
+        result_path = 'results/video/{}/result_reports.csv'.format(xp_name)
+        save_path = 't-sne/{}'.format(xp_name)
+    elif mode == 'audio':
+        xp_name = 'cmd3_audio_last_0305'
+        feature_path = 'custom_features/audio/{}'.format(xp_name)
+        result_path = 'results/audio/{}/result_reports.csv'.format(xp_name)
+        save_path = 't-sne/{}'.format(xp_name)
+
+    fix_random_seeds()
+
+    tsne_vis(feature_path, result_path, tsne_mode, save_path)
 
 if __name__ == '__main__':
     main()
