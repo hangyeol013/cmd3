@@ -73,25 +73,35 @@ def main(cfg: DictConfig):
 
     for clip_id in vidio_id_set:
         file_id = clip_id.split('/clip')[0]
-        file_results[file_id] = {'preds': {}, 'preds_f': 0, 'target': 0}
-        file_results[file_id]['preds']['0'] = 0
-        file_results[file_id]['preds']['1'] = 0
-        file_results[file_id]['preds']['2'] = 0
+        file_results[file_id] = {'preds': [0, 0, 0], 'preds_f': 0, 'target': 0}
         for video_clip_id, out_preds, out_targets in zip(ids, preds_label, targets):
             video_id = video_clip_id.split('/clip')[0]
             if video_id == file_id:
                 if out_preds == 0:
-                    file_results[file_id]['preds']['0'] += 1
+                    file_results[file_id]['preds'][0] += 1
                 elif out_preds == 1:
-                    file_results[file_id]['preds']['1'] += 1
+                    file_results[file_id]['preds'][1] += 1
                 elif out_preds == 2:
-                    file_results[file_id]['preds']['2'] += 1
-                file_results[file_id]['preds_f'] = max(file_results[file_id]['preds'], key=file_results[file_id]['preds'].get)
+                    file_results[file_id]['preds'][2] += 1
+                max_val = max(file_results[file_id]['preds'])
+                file_results[file_id]['preds_f'] = file_results[file_id]['preds'].index(max_val)
+                # file_results[file_id]['preds_f'] = max(file_results[file_id]['preds'], key=file_results[file_id]['preds'].get)
                 file_results[file_id]['target'] = out_targets.item()
 
+    total = 0
+    correct = 0
+    for i in range(len(file_results.values())):
+        file_pred = int(list(file_results.values())[i]['preds_f'])
+        file_target = int(list(file_results.values())[i]['target'])
+        total += 1
+        if file_pred == file_target:
+            correct += 1
+    file_accuracy = correct / total
+    print(file_accuracy)
 
     global_report = {}
     global_report["global_accuracy"] = get_global_accuracy(preds, targets)
+    global_report['file_accuracy'] = file_accuracy
     global_report["global_precision"] = get_global_precision(preds, targets)
     global_report["global_recall"] = get_global_recall(preds, targets)
     global_report_df = pd.DataFrame(global_report, index=["global"])

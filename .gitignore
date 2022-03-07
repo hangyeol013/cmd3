@@ -1,9 +1,7 @@
-cmd3_audio/models/vggish_pretrained.pth
-cmd3_video/models/resnet_pretrained.pth
+*.pth
 outputs/
 dataset/
 custom_features/
 kang_director_classification/
 cmd3_visual_old
 results/old
-cmd3_multi/

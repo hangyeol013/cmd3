@@ -24,8 +24,19 @@ def main(cfg: DictConfig):
         weight_decay=cfg.model.weight_decay,
         momentum=cfg.model.momentum,
     )
+    feature_extractor.model.fc = torch.nn.Identity()
 
-    feature_extractor.model.classifier = torch.nn.Identity()
+    model = CMD3Video.load_from_checkpoint(
+        cfg.full_checkpoint,
+        model_name=cfg.model.model_name,
+        model_depth=cfg.model.model_depth,
+        pretrained_path=None,
+        feature_extraction=cfg.model.feature_extraction,
+        optimizer=cfg.model.optimizer,
+        learning_rate=cfg.model.learning_rate,
+        weight_decay=cfg.model.weight_decay,
+        momentum=cfg.model.momentum,
+    )
 
     data_module = CMD3DataModule(
         root_dir=cfg.root_dir,
@@ -48,12 +59,20 @@ def main(cfg: DictConfig):
         plugins=DDPPlugin(find_unused_parameters=False),
     )
     trainer.test(feature_extractor, data_module)
+    trainer.test(model, data_module)
 
-    features, ids = [], []
-    for feature_output in feature_extractor.test_outputs:
+
+    features, preds, targets, ids = [], [], [], []
+    for feature_output, output in zip(
+        feature_extractor.test_outputs, model.test_outputs
+    ):
         features.append(feature_output["preds"].cpu())
+        preds.append(output["preds"].cpu())
+        targets.append(output["targets"].cpu())
         ids.extend(feature_output["id"])
     features = torch.cat(features)
+    preds = torch.cat(preds)
+    targets = torch.cat(targets)
 
     if not os.path.exists(cfg.feature_dir):
         os.makedirs(cfg.feature_dir)
@@ -61,6 +80,12 @@ def main(cfg: DictConfig):
     feature_path = os.path.join(cfg.feature_dir, "features.pk")
     with open(feature_path, "wb") as f:
         pickle.dump(features, f)
+    pred_path = os.path.join(cfg.feature_dir, "preds.pk")
+    with open(pred_path, "wb") as f:
+        pickle.dump(preds, f)
+    target_path = os.path.join(cfg.feature_dir, "targets.pk")
+    with open(target_path, "wb") as f:
+        pickle.dump(targets, f)
     id_path = os.path.join(cfg.feature_dir, "ids.pk")
     with open(id_path, "wb") as f:
         pickle.dump(ids, f)
