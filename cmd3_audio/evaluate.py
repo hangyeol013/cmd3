@@ -17,6 +17,7 @@ from utils.metrics import (
     get_global_accuracy,
     get_global_precision,
     get_global_recall,
+    save_conf_matrix,
 )
 
 
@@ -129,6 +130,7 @@ def main(cfg: DictConfig):
     confusion_matrix_df.to_csv(os.path.join(cfg.result_dir, "conf_matrix.csv"))
     results_report_df.to_csv(os.path.join(cfg.result_dir, "result_reports.csv"))
     file_report_df.to_csv(os.path.join(cfg.result_dir, "file_reports.csv"))
+    save_conf_matrix(os.path.join(cfg.result_dir, "conf_matrix.csv"), os.path.join(cfg.result_dir, "conf_matrix_img.png"))
 
 
 if __name__ == "__main__":

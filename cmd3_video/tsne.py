@@ -231,7 +231,7 @@ def tsne_vis(feature_path, result_path, tsne_mode, save_path):
 
 def main():
 
-    mode = 'video'
+    mode = 'multimodal'
     tsne_mode = 'both_labels'
 
     if mode == 'video':
@@ -244,9 +244,13 @@ def main():
         feature_path = 'custom_features/audio/{}'.format(xp_name)
         result_path = 'results/audio/{}/result_reports.csv'.format(xp_name)
         save_path = 't-sne/{}'.format(xp_name)
+    elif mode == 'multimodal':
+        xp_name = 'pred_fusion'
+        feature_path = 'custom_features/multimodal/{}'.format(xp_name)
+        result_path = 'results/multimodal/pred_fusion_0.5/result_reports.csv'
+        save_path = 't-sne/{}'.format(xp_name)
 
     fix_random_seeds()
-
     tsne_vis(feature_path, result_path, tsne_mode, save_path)
 
 if __name__ == '__main__':
