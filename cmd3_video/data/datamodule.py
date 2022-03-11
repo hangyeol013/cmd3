@@ -63,7 +63,7 @@ class CMD3DataModule(LightningDataModule):
         elif not self.augmentation:
             transform_list.append(Resize((self.frame_size, self.frame_size)))
 
-        transform_list.append(Lambda(lambda x: x / 255.0))
+        # transform_list.append(Lambda(lambda x: x / 255.0))
         if self.normalize:
             transform_list.append(
                 Normalize(mean=[0.45, 0.45, 0.45], std=[0.225, 0.225, 0.225])

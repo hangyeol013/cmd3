@@ -4,11 +4,11 @@ defaults:
   - dataset: cmd3
 
 root_dir: ${hydra:runtime.cwd}
-xp_name: cmd3_video_last_trainfeature_0308
+xp_name: all_layer
 # xp_name: test
-checkpoint: cmd3_video_last_0305-epoch=1-val_loss=0.00.ckpt
+checkpoint: val_accuracy.ckpt
 # checkpoint: last.ckpt
-full_checkpoint: ${hydra:runtime.cwd}/outputs/video_last/checkpoints/${checkpoint}
+full_checkpoint: ${hydra:runtime.cwd}/outputs/video_all/checkpoints/${checkpoint}
 result_dir: ${hydra:runtime.cwd}/results/video/${xp_name}
 feature_dir: ${root_dir}/custom_features/video/${xp_name}
 num_epochs: 20

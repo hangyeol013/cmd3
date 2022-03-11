@@ -14,15 +14,21 @@ from utils.metrics import (
     save_conf_matrix,
 )
 from torch.utils import data
+from numpy.linalg import norm
 
 
 NUM_CLASSES = 3
 
 
-def feature_fuse_eval(pretrained_path, vfeature_path, afeature_path, target_path, id_path):
+def feature_fuse_eval(pretrained_path, vfeature_path, afeature_path, target_path, id_path, feature_fusion_mode):
 
     v_features = np.load(vfeature_path, allow_pickle=True)
     a_features = np.load(afeature_path, allow_pickle=True)
+
+    if feature_fusion_mode == 'norm':
+        v_features = torch.from_numpy(np.expand_dims(norm(v_features, ord=2, axis=1), axis=1))
+        a_features = torch.from_numpy(np.expand_dims(norm(a_features, ord=2, axis=1), axis=1))
+
     concat_features = torch.cat((v_features, a_features), 1)
 
     targets = np.load(target_path, allow_pickle=True)
@@ -53,7 +59,11 @@ def feature_fuse_eval(pretrained_path, vfeature_path, afeature_path, target_path
     preds = torch.cat(preds)
     preds_label = torch.cat(preds_label)
     
-    save_path = 'results/multimodal/feature_fusion'
+    if feature_fusion_mode == 'norm':
+        save_path = 'results/multimodal/feature_fusion_norm'
+    else:
+        save_path = 'results/multimodal/feature_fusion'
+    
     save_results(preds, preds_label, targets, ids, save_path)
 
 
@@ -90,9 +100,9 @@ def save_results(preds, preds_label, targets, ids, save_path):
                     file_results[file_id]['preds'][1] += 1
                 elif out_preds == 2:
                     file_results[file_id]['preds'][2] += 1
-        max_val = max(file_results[file_id]['preds'])
-        file_results[file_id]['preds_f'] = file_results[file_id]['preds'].index(max_val)
-        file_results[file_id]['target'] = int(out_targets.item())
+                max_val = max(file_results[file_id]['preds'])
+                file_results[file_id]['preds_f'] = file_results[file_id]['preds'].index(max_val)
+                file_results[file_id]['target'] = int(out_targets.item())
 
     total = 0
     correct = 0
@@ -149,16 +159,26 @@ if __name__ == '__main__':
     
 
     # Evaluation
-    pretrained_path = 'cmd3_multi/cmd3_multimodal.pth'
-    vfeatures_eval_path = 'custom_features/video/cmd3_video_last_0305/features.pk'
-    afeatures_eval_path = 'custom_features/audio/cmd3_audio_last_0305/features.pk'
-    targets_eval_path = 'custom_features/audio/cmd3_audio_last_0305/targets.pk'
-    ids_eval_path = 'custom_features/audio/cmd3_audio_last_0305/ids.pk'
-    
-    vpreds_path = 'custom_features/video/cmd3_video_last_0305/preds.pk'
-    apreds_path = 'custom_features/audio/cmd3_audio_last_0305/preds.pk'
+    feature_fusion_mode = 'norm'
 
-    alpha = 0.9
+    if feature_fusion_mode == 'norm':
+        pretrained_path = 'cmd3_multi/feature_fusion_norm.pth'
+    else:
+        pretrained_path = 'cmd3_multi/feature_fusion.pth'
+
+    vfeatures_eval_path = 'custom_features/video/last_layer_test/features.pk'
+    afeatures_eval_path = 'custom_features/audio/last_layer_test/features.pk'
+    targets_eval_path = 'custom_features/audio/last_layer_test/targets.pk'
+    ids_eval_path = 'custom_features/audio/last_layer_test/ids.pk'
     
-    feature_fuse_eval(pretrained_path, vfeatures_eval_path, afeatures_eval_path, targets_eval_path, ids_eval_path)
-    pred_fuse(vpreds_path, apreds_path, targets_eval_path, ids_eval_path, alpha)
+    vpreds_path = 'custom_features/video/last_layer_test/preds.pk'
+    apreds_path = 'custom_features/audio/last_layer_test/preds.pk'
+
+    # alpha = 0.5
+    feature_fuse_eval(pretrained_path, vfeatures_eval_path, afeatures_eval_path, targets_eval_path, ids_eval_path, feature_fusion_mode)
+    # pred_fuse(vpreds_path, apreds_path, targets_eval_path, ids_eval_path, alpha)
+    # pred_fuse(vpreds_path, apreds_path, targets_eval_path, ids_eval_path, 0.1)
+    # pred_fuse(vpreds_path, apreds_path, targets_eval_path, ids_eval_path, 0.3)
+    # pred_fuse(vpreds_path, apreds_path, targets_eval_path, ids_eval_path, 0.5)
+    # pred_fuse(vpreds_path, apreds_path, targets_eval_path, ids_eval_path, 0.7)
+    # pred_fuse(vpreds_path, apreds_path, targets_eval_path, ids_eval_path, 0.9)
