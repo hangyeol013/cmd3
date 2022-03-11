@@ -154,7 +154,7 @@ def visualize_tsne(tsne, labels, mode, plot_size=1000, max_image_size=100):
 
 
 def visualize_tsne_points_both(tx, ty, gt_labels, pd_labels, file_name):
-    fig = plt.figure(figsize=(8,6), dpi=1200)
+    fig = plt.figure(figsize=(8,6), dpi=600)
     ax = fig.add_subplot(111)
 
     for label in colors_per_class:
@@ -231,19 +231,34 @@ def tsne_vis(feature_path, result_path, tsne_mode, save_path):
 
 def main():
 
-    mode = 'audio'
+    mode = 'pred'
     tsne_mode = 'both_labels'
 
     if mode == 'video':
-        xp_name = 'cmd3_video_last_0305'
-        feature_path = 'custom_features/video/{}'.format(xp_name)
+        xp_name = 'last_layer'
+        feature_path = 'custom_features/video/{}_test'.format(xp_name)
         result_path = 'results/video/{}/result_reports.csv'.format(xp_name)
-        save_path = 't-sne/{}'.format(xp_name)
+        save_path = 't-sne/video_{}'.format(xp_name)
     elif mode == 'audio':
-        xp_name = 'cmd3_audio_last_0305'
-        feature_path = 'custom_features/audio/{}'.format(xp_name)
+        xp_name = 'last_layer'
+        feature_path = 'custom_features/audio/{}_test'.format(xp_name)
         result_path = 'results/audio/{}/result_reports.csv'.format(xp_name)
-        save_path = 't-sne/{}'.format(xp_name)
+        save_path = 't-sne/audio_{}'.format(xp_name)
+    elif mode == 'feature':
+        xp_name = 'feature_fusion'
+        feature_path = 'custom_features/multimodal/{}'.format(xp_name)
+        result_path = 'results/multimodal/{}/result_reports.csv'.format(xp_name)
+        save_path = 't-sne/multi_{}'.format(xp_name)
+    elif mode == 'feature_norm':
+        xp_name = 'feature_norm'
+        feature_path = 'custom_features/multimodal/{}'.format(xp_name)
+        result_path = 'results/multimodal/{}/result_reports.csv'.format(xp_name)
+        save_path = 't-sne/multi_{}'.format(xp_name)
+    elif mode == 'pred':
+        xp_name = 'pred_fusion'
+        feature_path = 'custom_features/multimodal/{}'.format(xp_name)
+        result_path = 'results/multimodal/{}_0.5/result_reports.csv'.format(xp_name)
+        save_path = 't-sne/multi_{}'.format(xp_name)
 
     fix_random_seeds()
 
