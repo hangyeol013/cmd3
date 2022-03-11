@@ -1,2 +1,2 @@
-,global_accuracy,global_precision,global_recall
-global,0.5173084735870361,0.5256321430206299,0.5173084735870361
+,global_accuracy,file_accuracy,global_precision,global_recall
+global,0.5173084735870361,0.6923076923076923,0.5256321430206299,0.5173084735870361
