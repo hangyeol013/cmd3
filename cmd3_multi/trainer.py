@@ -14,12 +14,11 @@ def feature_fuse_train(vfeature_path, afeature_path, targets_path, ids_path, mod
     a_features = np.load(afeature_path, allow_pickle=True)
 
     if mode == 'feature_norm':
-        v_features = torch.from_numpy(np.expand_dims(norm(v_features, ord=2, axis=1), axis=1))
-        a_features = torch.from_numpy(np.expand_dims(norm(a_features, ord=2, axis=1), axis=1))
+        v_features = v_features / torch.from_numpy(np.expand_dims(norm(v_features, ord=2, axis=1), axis=1))
+        a_features = a_features / torch.from_numpy(np.expand_dims(norm(a_features, ord=2, axis=1), axis=1))
 
     concat_features = torch.cat((v_features, a_features), 1)
-
-
+    
     ids = np.load(ids_path, allow_pickle=True)
     targets = np.load(targets_path, allow_pickle=True)
 
@@ -34,7 +33,7 @@ def feature_fuse_train(vfeature_path, afeature_path, targets_path, ids_path, mod
 
     train_loader = data.DataLoader(data.TensorDataset(concat_features, targets), batch_size=16, shuffle=True)
 
-    n_epochs = 5
+    n_epochs = 2
     for epoch in range(n_epochs):
         for batch in train_loader:
             

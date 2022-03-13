@@ -17,9 +17,10 @@ def save_conf_matrix(conf_path, save_path):
 
     cf_matrix = cf_matrix[1:]
     cf_matrix = np.array(cf_matrix).astype(int)
-
+    cf_matrix = cf_matrix/cf_matrix.sum(axis=1, keepdims=True)
+    
     plt.figure(figsize = (9,9))
-    ax = sns.heatmap(cf_matrix, annot=True, cmap='Blues', fmt='d')
+    ax = sns.heatmap(cf_matrix, annot=True, cmap='Blues', fmt='.2f')
 
     ax.set_title('Seaborn Confusion Matrix with labels\n\n')
     ax.set_xlabel('\nPredicted Values')

@@ -26,8 +26,8 @@ def feature_fuse_eval(pretrained_path, vfeature_path, afeature_path, target_path
     a_features = np.load(afeature_path, allow_pickle=True)
 
     if feature_fusion_mode == 'norm':
-        v_features = torch.from_numpy(np.expand_dims(norm(v_features, ord=2, axis=1), axis=1))
-        a_features = torch.from_numpy(np.expand_dims(norm(a_features, ord=2, axis=1), axis=1))
+        v_features = v_features / torch.from_numpy(np.expand_dims(norm(v_features, ord=2, axis=1), axis=1))
+        a_features = a_features / torch.from_numpy(np.expand_dims(norm(a_features, ord=2, axis=1), axis=1))
 
     concat_features = torch.cat((v_features, a_features), 1)
 
@@ -174,9 +174,9 @@ if __name__ == '__main__':
     vpreds_path = 'custom_features/video/last_layer_test/preds.pk'
     apreds_path = 'custom_features/audio/last_layer_test/preds.pk'
 
-    # alpha = 0.5
+    alpha = 0.5
     feature_fuse_eval(pretrained_path, vfeatures_eval_path, afeatures_eval_path, targets_eval_path, ids_eval_path, feature_fusion_mode)
-    # pred_fuse(vpreds_path, apreds_path, targets_eval_path, ids_eval_path, alpha)
+    pred_fuse(vpreds_path, apreds_path, targets_eval_path, ids_eval_path, alpha)
     # pred_fuse(vpreds_path, apreds_path, targets_eval_path, ids_eval_path, 0.1)
     # pred_fuse(vpreds_path, apreds_path, targets_eval_path, ids_eval_path, 0.3)
     # pred_fuse(vpreds_path, apreds_path, targets_eval_path, ids_eval_path, 0.5)

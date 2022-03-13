@@ -82,5 +82,6 @@ class VGGish(VGG):
 
 
 if __name__ == "__main__":
-    model = VGGish()
+    model_path = 'cmd3_audio/models/vggish_pretrained.pth'
+    model = VGGish(model_path, 3, False)
     print(model)

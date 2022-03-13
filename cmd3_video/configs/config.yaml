@@ -4,7 +4,7 @@ defaults:
   - dataset: cmd3
 
 root_dir: ${hydra:runtime.cwd}
-xp_name: all_layer
+xp_name: last_layer
 # xp_name: test
 checkpoint: val_accuracy.ckpt
 # checkpoint: last.ckpt
