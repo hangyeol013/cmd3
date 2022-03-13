@@ -1,3 +1,4 @@
+from matplotlib import font_manager
 import numpy as np
 import torch
 import torchmetrics.functional as F
@@ -26,15 +27,15 @@ def save_conf_matrix(conf_path, save_path):
     
 
     plt.figure(figsize = (9,9))
-    ax = sns.heatmap(cf_matrix, annot=True, cmap='Blues', fmt='.2f')
+    ax = sns.heatmap(cf_matrix, annot=True, cmap='Blues', fmt='.2f', annot_kws={"size": 13})
 
-    ax.set_title('Seaborn Confusion Matrix with labels\n\n')
-    ax.set_xlabel('\nPredicted Values')
-    ax.set_ylabel('Actual Values ')
+    # ax.set_title('Seaborn Confusion Matrix with labels\n\n')
+    ax.set_xlabel('\nPredicted Values', size=17)
+    ax.set_ylabel('Actual Values ', size=17)
 
     ## Ticket labels - List must be in alphabetical order
-    ax.xaxis.set_ticklabels(['Stanley Kubrick','David Fincher', 'Joel Coen'])
-    ax.yaxis.set_ticklabels(['Stanley Kubrick','David Fincher', 'Joel Coen'])
+    ax.xaxis.set_ticklabels(['Stanley Kubrick','David Fincher', 'Joel Coen'], size=15)
+    ax.yaxis.set_ticklabels(['Stanley Kubrick','David Fincher', 'Joel Coen'], size=15)
 
 
     ## Display the visualization of the Confusion Matrix.
